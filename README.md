@@ -1,5 +1,3 @@
 # Webentwicklung-Projekt
-##brainstorm
-beschreibung projekt: 
+## beschreibung projekt: 
 Ein Puzzle Game
-untertehemn: 
