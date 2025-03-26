@@ -1,0 +1,42 @@
+
+body {
+    height:100vh;
+    display: flex; 
+    flex-direction: column;
+    background-color: powderblue;
+}
+.topbox {
+    flex-direction: column;
+    background-color: white;
+    height: 20%; 
+    display: flex;
+
+}
+.bottombox {
+    background-color: pink;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    border-radius: 20px;
+    flex-direction: row;
+
+}
+.linkeSeite{
+    background-color: blueviolet;
+    width: 20%;
+    display: flex;
+}
+.rechteSeite{
+    background-color: rgb(43, 58, 226);
+    width: 20%;
+    display: flex;
+
+}
+.mitte{
+    background-color: rgb(43, 226, 177);
+    flex-grow: 1;
+    display: flex;
+
+
+}
+
