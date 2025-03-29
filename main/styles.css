@@ -1,3 +1,5 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&display=swap');
 body {
     height: 100vh;
     display: flex;
@@ -10,9 +12,15 @@ body {
     background-color: transparent;
     height: 15%;
     display: flex;
+    align-items: center;
+    align-content: center;
 }
 .ueberschrift{
     color:rgb(182, 143, 255);
+    font-size: 50px;
+    font-family: 'Crete+Round',cursive;
+    text-shadow:3px 5px 4px black;
+    
 }
 
 .bottombox {
@@ -35,19 +43,46 @@ body {
 }
 
 .name {
-    background-color: brown;
+    background-color:  rgb(27, 27, 27);
     width: 55%;
     height: 20%;
     display: flex;
     margin-top: 5%;
+    align-items: center;
+    border: none;
+    border-radius: 5%;
+    flex-direction: column;
+
+  
+}
+.nametext
+{
+    color:rgb(182, 143, 255);
+    font-size: 30px;
+    font-family:cursive;
+    text-shadow:3px 5px 4px black;
+   
+  
+
 }
 
 .highscore {
-    background-color: brown;
+    background-color: rgb(27, 27, 27);
     width: 70%;
     height: 40%;
     display: flex;
     margin-top: 5%;
+    border: none;
+    border-radius: 5%;
+    flex-direction: column;
+    align-items: center;
+}
+.highscoretext{
+    color:rgb(182, 143, 255);
+    font-size: 30px;
+    font-family:cursive;
+    text-shadow:3px 5px 4px black;
+
 }
 
 .savebutton {
@@ -67,6 +102,7 @@ body {
     align-items: center;
     position: relative;
 }
+
 
 .imagebutton {
     display: flex;
@@ -218,4 +254,10 @@ body {
     border-bottom: 2px solid rgb(235, 235, 235);
     border-left: 2px solid rgb(235, 235, 235);
     border-right: 2px solid rgb(235, 235, 235);
+}
+img {
+    width: 100%;      /* Bild auf die Breite des Parent-Elements skalieren */
+    height: auto;     /* Höhe wird automatisch angepasst, um das Seitenverhältnis zu wahren */
+    max-width: 100%;  /* Maximale Breite auf 100% begrenzen */
+    max-height: 100%; /* Maximale Höhe auf 100% begrenzen */
 }
