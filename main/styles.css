@@ -1,92 +1,89 @@
 
 body {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
     background-color: rgb(157, 157, 157);
+    height: 100vh; /* Höhe des Körpers auf 100% der Viewport-Höhe */
+    display: flex; /* Aktiviert Flexbox für das Layout, Anrichtung im Element */
+    flex-direction: column; /* Element in Spalte angeordnet */
 }
-/*mainseite*******************************************************************/
+
+/*mainseite*/
+
 .topbox {
-    flex-direction: column;
     background-color: transparent;
+    flex-direction: column;
     height: 15%;
     display: flex;
-    align-items: center;
+    align-items: center; /* Elemente und Inhalt Mittig */
     align-content: center;
 }
-.ueberschrift{
+
+.ueberschrift {
     color:rgb(182, 143, 255);
-    font-size: 50px;
-    font-family: cursive;
     text-shadow:3px 5px 4px black;
-    
+    font-family: cursive;  
+    font-size: 50px; 
 }
 
 .bottombox {
     background-color: transparent;
-    flex-grow: 1;
+    flex-direction: row; /* Elemente in Reihe */
+    flex-grow: 1; /* Box waechst um Platz zu fuellen */
     display: flex;
     justify-content: center;
-    border-radius: 20px;
-    flex-direction: row;
+    border-radius: 20px; /* Ecken abrunden */
 }
 
 .linkeSeite {
     background-color: transparent;
+    flex-direction: column;
     width: 35%;
     height: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    position: relative;
+    position: relative; /* Position relativ zu Container */
 }
 
 .name {
     background-color:  rgb(27, 27, 27);
+    flex-direction: column;
     width: 55%;
     height: 20%;
     display: flex;
-    margin-top: 5%;
-    align-items: center;
+    margin-top: 5%; /* Abstand nach Oben */
+    align-items: center; /* Element zentrieren */
     border: none;
     border-radius: 5%;
-    flex-direction: column;
-
-  
 }
-.nametext
-{
-    color:rgb(182, 143, 255);
-    font-size: 30px;
-    font-family:cursive;
-    text-shadow:3px 5px 4px black;
-   
-  
 
+.nametext {
+    color:rgb(182, 143, 255);
+    text-shadow:3px 5px 4px black;
+    font-family:cursive;
+    font-size: 30px;
 }
 
 .highscore {
     background-color: rgb(27, 27, 27);
     width: 70%;
     height: 40%;
+    flex-direction: column;
+    align-items: center;
     display: flex;
     margin-top: 5%;
     border: none;
     border-radius: 5%;
-    flex-direction: column;
-    align-items: center;
 }
-.highscoretext{
-    color:rgb(182, 143, 255);
-    font-size: 30px;
-    font-family:cursive;
-    text-shadow:3px 5px 4px black;
 
+.highscoretext {
+    color:rgb(182, 143, 255);
+    text-shadow:3px 5px 4px black;
+    font-family:cursive;
+    font-size: 30px;
 }
 
 .savebutton {
     position: absolute;
-    bottom: 5%;
+    bottom: 5%; /* Abstand zu Seiten */
     right: 5%;
     width: auto;
     height: auto;
@@ -101,7 +98,6 @@ body {
     align-items: center;
     position: relative;
 }
-
 
 .imagebutton {
     display: flex;
@@ -129,7 +125,7 @@ body {
 
 .puzzlefeld {
     background-color: black;
-    aspect-ratio: 1/1;
+    aspect-ratio: 1/1; /* Ratio fuer quadratische Form */
     display: flex;
     height: 85vh;
     margin-top: 1%;
@@ -149,8 +145,6 @@ body {
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.11);
     position: relative;
-
-
 }
 
 .svgIcon {
@@ -202,7 +196,8 @@ body {
     border-left: 2px solid rgb(235, 235, 235);
     border-right: 2px solid rgb(235, 235, 235);
 }
-/*.grosserbutton++++++++++++++++++++++++++++++++++++++++++++*/
+
+/*.grosserbutton*/
 .runderbuttongross {
     width: 80px;
     height: 80px;
@@ -213,7 +208,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: pointer; /* Zeiger aendert sich beim Hovern */
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.11);
     position: relative;
 
@@ -256,12 +251,13 @@ body {
 }
 img {
     width: 100%;      /* Bild auf die Breite des Parent-Elements skalieren */
-    height: auto;     /* Höhe wird automatisch angepasst, um das Seitenverhältnis zu wahren */
+    height: auto;     /* Höhe wird automatisch angepasst um Seitenverhältnis zu behalten */
     max-width: 100%;  /* Maximale Breite auf 100% begrenzen */
     max-height: 100%; /* Maximale Höhe auf 100% begrenzen */
 }
-/*startseite******************************************************/
 
+
+/*startseite*/
 
 .linkeSeitestart {
     background-color: transparent;
@@ -272,6 +268,7 @@ img {
     align-items: center;
     position: relative;
 }
+
 .mittestart {
     background-color: transparent;
     flex-grow: 1;
@@ -279,6 +276,7 @@ img {
     align-items: flex-start;
     justify-content: center;
 }
+
 .rechteSeitestart {
     background-color:transparent;
     width: 20%;
@@ -288,6 +286,7 @@ img {
     align-items: center;
     position: relative;
 }
+
 .importbutton {
     position: absolute;
     top: 5%;
@@ -310,16 +309,16 @@ img {
     pointer-events: none;
     letter-spacing: 0.5px;
 }
-.startbutton{
+
+.startbutton {
     position: absolute;
     bottom: 5%;
     left: 5%;
     width: auto;
     height:auto;
-    
-
 }
-.tooltipstart{
+
+.tooltipstart {
     position: absolute;
     right: -95px;
     opacity: 0;
@@ -332,40 +331,41 @@ img {
     justify-content: center;
     pointer-events: none;
     letter-spacing: 0.5px;
-
 }
-.mittetabelle{
+
+.mittetabelle {
     background-color:rgb(27, 27, 27);
     width: 100%;
     height:auto;
-    margin:3%;
-    border-collapse: separate;
-    border-spacing: 0px;
+    margin:3%; /* Abstand */
+    border-collapse: separate; /* Trennung der Tabellenränder */
+    border-spacing: 0px;  /* Kein Abstand zwischen Zellen */
     width: 100%;
-    border-radius: 20px; /* Rounds the corners of the table */
-    overflow: scroll; /* Ensures the content does not overflow the rounded corners */
+    border-radius: 20px; 
+    overflow: scroll; /* Kein overflow von Inhalt */
 }
 th, td {
-    border: 3px solid rgb(182, 143, 255); /* Adds a 1px solid black border around the cells */
-    padding: 8px; /* Adds padding inside the cells */
-    text-align: left; /* Optional: Aligns text to the left */
+    border: 3px solid rgb(182, 143, 255);
+    padding: 8px; /* Innenabstand */
+    text-align: left; /* Text linksbuendig */
     color: rgb(235, 235, 235);
     font-family: cursive;
 }
 
-/* Optional: Optional styling for first and last row corners to ensure smooth rounding */
+/* Erste und letzte Zeile abgerundete Ecken */
 tr:first-child th:first-child {
-    border-top-left-radius: 20px; /* Round the top-left corner */
+    border-top-left-radius: 20px; /* Rund oben links */
 }
 
 tr:first-child th:last-child {
-    border-top-right-radius: 20px; /* Round the top-right corner */
+    border-top-right-radius: 20px; 
 }
 
 tr:last-child td:first-child {
-    border-bottom-left-radius: 20px; /* Round the bottom-left corner */
+    border-bottom-left-radius: 20px; 
 }
 
 tr:last-child td:last-child {
-    border-bottom-right-radius: 20px; /* Round the bottom-right corner */
+    border-bottom-right-radius: 20px; 
 }
+/*Styling Tabelle (nicht Kommentare) mit ChatGpt*/
