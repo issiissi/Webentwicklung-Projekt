@@ -1,12 +1,11 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&display=swap');
 body {
     height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: rgb(157, 157, 157);
 }
-
+/*mainseite*******************************************************************/
 .topbox {
     flex-direction: column;
     background-color: transparent;
@@ -18,7 +17,7 @@ body {
 .ueberschrift{
     color:rgb(182, 143, 255);
     font-size: 50px;
-    font-family: 'Crete+Round',cursive;
+    font-family: cursive;
     text-shadow:3px 5px 4px black;
     
 }
@@ -183,9 +182,9 @@ body {
 
 
 /*Sichtbarkeit Hover Tooltip */
-.runderbutton:hover .tooltip {
+.runderbutton:hover .tooltip , .runderbutton:hover .tooltipimport , .runderbutton:hover .tooltipstart{
     opacity: 1;
-}
+} 
 
 /*Farbe Hover Hintergrund*/
 .runderbutton:hover {
@@ -260,4 +259,113 @@ img {
     height: auto;     /* Höhe wird automatisch angepasst, um das Seitenverhältnis zu wahren */
     max-width: 100%;  /* Maximale Breite auf 100% begrenzen */
     max-height: 100%; /* Maximale Höhe auf 100% begrenzen */
+}
+/*startseite******************************************************/
+
+
+.linkeSeitestart {
+    background-color: transparent;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.mittestart {
+    background-color: transparent;
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+.rechteSeitestart {
+    background-color:transparent;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.importbutton {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: auto;
+    height: auto;
+  
+}
+.tooltipimport  {
+    position: absolute;
+    right: -115px;
+    opacity: 0;
+    background-color: rgb(12, 12, 12);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+.startbutton{
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    width: auto;
+    height:auto;
+    
+
+}
+.tooltipstart{
+    position: absolute;
+    right: -95px;
+    opacity: 0;
+    background-color: rgb(12, 12, 12);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+
+}
+.mittetabelle{
+    background-color:rgb(27, 27, 27);
+    width: 100%;
+    height:auto;
+    margin:3%;
+    border-collapse: separate;
+    border-spacing: 0px;
+    width: 100%;
+    border-radius: 20px; /* Rounds the corners of the table */
+    overflow: scroll; /* Ensures the content does not overflow the rounded corners */
+}
+th, td {
+    border: 3px solid rgb(182, 143, 255); /* Adds a 1px solid black border around the cells */
+    padding: 8px; /* Adds padding inside the cells */
+    text-align: left; /* Optional: Aligns text to the left */
+    color: rgb(235, 235, 235);
+    font-family: cursive;
+}
+
+/* Optional: Optional styling for first and last row corners to ensure smooth rounding */
+tr:first-child th:first-child {
+    border-top-left-radius: 20px; /* Round the top-left corner */
+}
+
+tr:first-child th:last-child {
+    border-top-right-radius: 20px; /* Round the top-right corner */
+}
+
+tr:last-child td:first-child {
+    border-bottom-left-radius: 20px; /* Round the bottom-left corner */
+}
+
+tr:last-child td:last-child {
+    border-bottom-right-radius: 20px; /* Round the bottom-right corner */
 }
