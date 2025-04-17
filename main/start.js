@@ -19,3 +19,4 @@ fileInput.addEventListener('change', () => {
         alert('Bild ausgewählt: ' + fileInput.files[0].name);
     }
 });
+ // mit chatGpt hilfe 
