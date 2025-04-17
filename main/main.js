@@ -9,10 +9,16 @@ function startTimer() {
 }
 
 function updateTimerDisplay() {
-    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    const timeString = `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+
+    const timeString = `${padZero(hours)}:${padZero(minutes)}:${padZero(secs)}`;
     document.getElementById("gameTimer").innerText = timeString;
+}
+
+function padZero(num) {
+    return num < 10 ? '0' + num : num;
 }
 
 window.addEventListener("DOMContentLoaded", () => {
