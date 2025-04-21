@@ -351,6 +351,10 @@ th, td {
     color: rgb(235, 235, 235);
     font-family: cursive;
 }
+.mittetabelle tr.selected {
+    background-color: #333; /* dunkelgrau */
+    color: white;
+}
 
 /* Erste und letzte Zeile abgerundete Ecken */
 tr:first-child th:first-child {
