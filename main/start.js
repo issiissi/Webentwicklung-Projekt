@@ -35,7 +35,8 @@ fileInput.addEventListener('change', () => {
         const jsondata = {
             imageData: imageData,
             highscore: null,
-            currentTime: null
+            currentTime: null,
+            formation: null
         };
         const jsonString = JSON.stringify(jsondata);
         localStorage.setItem(imageName, jsonString);
