@@ -1,114 +1,133 @@
-// ⬛ Unsichtbares Datei-Input-Feld erstellen
+//  Unsichtbares Datei-Input-Feld erstellen (für Bildauswahl)
 const fileInput = document.createElement('input');
+fileInput.type = 'file';                  // Typ ist Datei
+fileInput.accept = 'image/*';             // Nur Bilddateien zulassen
+fileInput.style.display = 'none';         // Unsichtbar machen
+document.body.appendChild(fileInput);     // In den Body einfügen
 
-fileInput.type = 'file';
-fileInput.accept = 'image/*'; // Nur Bilddateien erlauben
-fileInput.style.display = 'none';
-document.body.appendChild(fileInput); // ins DOM einfügen
-
-// ⬛ Den Import-Button aus dem HTML greifen
+//  Den Import-Button im HTML-Dokument holen
 const importButton = document.querySelector('.importbutton .runderbutton');
+
+//  Funktion wird ausgeführt, sobald das DOM vollständig geladen ist
 document.addEventListener('DOMContentLoaded', () => {
-    // Wird ausgeführt, wenn das HTML komplett geladen ist
-    updateTableFromLocalStorage();
+    updateTableFromLocalStorage();        // Tabelle mit gespeicherten Bilddaten aktualisieren
 });
 
-
-// ⬛ Öffnet das Datei-Auswahlfenster beim Klick auf den Button
+//  Beim Klick auf den Button wird das Datei-Auswahlfenster geöffnet
 importButton.addEventListener('click', () => {
-    fileInput.click();
+    fileInput.click();                    // Klick auf das versteckte Input-Feld auslösen
 });
 
-//speichert datei in lokal storage
+// Wenn der Benutzer ein Bild auswählt, wird dieses eingelesen und im LocalStorage gespeichert
 fileInput.addEventListener('change', () => {
-    const file = fileInput.files[0];
-    if (!file) return;
+    const file = fileInput.files[0];      // Erstes ausgewähltes File holen
+    if (!file) return;                    // Wenn keine Datei gewählt wurde, abbrechen
 
+    // Sicherstellen, dass es sich um eine Bilddatei handelt
     if (!file.type.startsWith('image/')) {
         console.warn("Datei ist kein Bild.");
         return;
     }
+
+    // FileReader wird benutzt, um das Bild als Base64 zu laden
     let reader = new FileReader();
     reader.onload = (event) => {
-        const imageName = fileInput.files[0].name
-        const imageData = event.target.result;
+        const imageName = fileInput.files[0].name;  // Dateiname (inkl. Endung)
+        const imageData = event.target.result;      // Base64-Daten
+
+        // JSON-Struktur (javscript objektnotation objekt wird in text gespeichert das man laden kann dass es genau so wieder erstellt wird wie es im string gespeichert ist) zum Speichern vorbereiten
         const jsondata = {
             imageData: imageData,
             highscore: null,
             currentTime: null,
             formation: null
         };
+
+        // Daten in JSON umwandeln und im LocalStorage speichern
         const jsonString = JSON.stringify(jsondata);
         localStorage.setItem(imageName, jsonString);
-        fileInput.value = ''; // ← hier
+
+        fileInput.value = ''; // Reset des Input-Feldes (damit man die gleiche Datei erneut auswählen könnte)
+
+        // Tabelle mit neuen Daten aktualisieren
         updateTableFromLocalStorage();
     };
-    reader.readAsDataURL(file);
+
+    reader.readAsDataURL(file);  // Datei als Base64 einlesen
 });
 
 
+// Tabelle mit den gespeicherten Bildern und deren Daten aktualisieren
 function updateTableFromLocalStorage() {
     const table = document.getElementById('HighscoreTabelle');
 
-    // Lösche alle bisherigen Datenzeilen (alles außer Header)
+    // Alle alten Datenzeilen (außer der Kopfzeile) löschen
     while (table.rows.length > 1) {
         table.deleteRow(1);
     }
 
-    // Hole alle Keys aus dem localStorage
+    // Durch alle gespeicherten Items im localStorage iterieren
     for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        const jsonString = localStorage.getItem(key);
-        const data = JSON.parse(jsonString);
+        const key = localStorage.key(i);                   // Schlüssel (Dateiname)
+        const jsonString = localStorage.getItem(key);      // JSON-String auslesen
+        const data = JSON.parse(jsonString);               // In Objekt umwandeln
 
-        // Falls du nur Bilddaten willst, kannst du prüfen ob value mit "data:image/" anfängt
+        const newRow = table.insertRow();                  // Neue Zeile in die Tabelle einfügen
 
-        const newRow = table.insertRow();
-
+        // Zellen für Name, Highscore und aktuelle Zeit hinzufügen
         const nameCell = newRow.insertCell();
         const highscoreCell = newRow.insertCell();
         const timeCell = newRow.insertCell();
 
-        nameCell.textContent = key;
+        nameCell.textContent = key;                        // Dateiname anzeigen
+
+        // Highscore anzeigen (oder "-" wenn nicht vorhanden)
         if (data.highscore != null) {
             highscoreCell.textContent = data.highscore;
+        } else {
+            highscoreCell.textContent = "-";
         }
-        else {
 
-
-            highscoreCell.textContent = "-"; // Platzhalter
-        }
+        // Aktuelle Zeit anzeigen (oder "-" wenn nicht vorhanden)
         if (data.currentTime != null) {
             timeCell.textContent = data.currentTime;
+        } else {
+            timeCell.textContent = "-";
         }
-        else {
-            timeCell.textContent = "-"; // Platzhalter
-        }
-        newRow.addEventListener('click', selectRow);
 
+        // Wenn die Zeile angeklickt wird, wird sie markiert
+        newRow.addEventListener('click', selectRow);
     }
 }
 
-
+//  Tabelle definieren und ausgewählten Wert speichern
 const table = document.getElementById('HighscoreTabelle');
 let selectedValue = null;
 
+//  markiert die geklickte Zeile und speichert den Namen
 function selectRow(event) {
+    // Alle bisherigen Markierungen entfernen
     for (let j = 1; j < table.rows.length; j++) {
         table.rows[j].classList.remove('selected');
     }
 
+    // Aktuelle Zeile markieren
     const clickedRow = event.currentTarget;
     clickedRow.classList.add('selected');
 
+    // Namen der Bilddatei merken
     selectedValue = clickedRow.cells[0].innerText;
-    console.log('Gespeichert:', selectedValue);
+    console.log('Gespeichert:', selectedValue); // Für Debugzwecke
 }
+
+// wechsel auf andere Seite
 function changeSite() {
+    // Wenn keine Auswahl getroffen wurde, Hinweis anzeigen
     if (selectedValue == null) {
         window.alert("No picture selected ");
         return;
     }
 
+    // weiterleitung mit parameter parameter gibt an welches bild aus speicher geladen werden muss 
     window.location.href = `main.html?DateiName=${encodeURIComponent(selectedValue)}`;
 }
