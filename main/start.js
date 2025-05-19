@@ -131,3 +131,12 @@ function changeSite() {
     // weiterleitung mit parameter parameter gibt an welches bild aus speicher geladen werden muss 
     window.location.href = `main.html?DateiName=${encodeURIComponent(selectedValue)}`;
 }
+async function requestTextWithGET(url) {
+  const response = await fetch(url);
+  console.log('Response:', response); // vollständiges Response-Objekt
+  const text = await response.text();
+  console.log('Response-Text:', text); // Text aus dem Response-Body
+}
+
+requestTextWithGET('http://127.0.0.1:3000/');
+console.log('Zwischenzeitlich weiterarbeiten...');
