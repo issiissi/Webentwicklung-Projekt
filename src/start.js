@@ -9,8 +9,8 @@ document.body.appendChild(fileInput);     // In den Body einfügen
 const importButton = document.querySelector('.importbutton .runderbutton');
 
 //  Funktion wird ausgeführt, sobald das DOM vollständig geladen ist
-document.addEventListener('DOMContentLoaded', () => {
-    updateTableFromLocalStorage();        // Tabelle mit gespeicherten Bilddaten aktualisieren
+document.addEventListener('DOMContentLoaded', async () => {
+   await updateTableFromLocalStorage();        // Tabelle mit gespeicherten Bilddaten aktualisieren
 });
 
 //  Beim Klick auf den Button wird das Datei-Auswahlfenster geöffnet
@@ -31,8 +31,8 @@ fileInput.addEventListener('change', () => {
 
     // FileReader wird benutzt, um das Bild als Base64 zu laden
     let reader = new FileReader();
-    reader.onload = (event) => {
-        const imageName = fileInput.files[0].name;  // Dateiname (inkl. Endung)
+    reader.onload = async (event) => {
+        let imageName = fileInput.files[0].name;  // Dateiname (inkl. Endung) let weil endung später weggenommen wird 
         const imageData = event.target.result;      // Base64-Daten
 
         // JSON-Struktur (javscript objektnotation objekt wird in text gespeichert das man laden kann dass es genau so wieder erstellt wird wie es im string gespeichert ist) zum Speichern vorbereiten
@@ -45,12 +45,15 @@ fileInput.addEventListener('change', () => {
 
         // Daten in JSON umwandeln und im LocalStorage speichern
         const jsonString = JSON.stringify(jsondata);
-        localStorage.setItem(imageName, jsonString);
+        imageName = imageName.substring(0, imageName.lastIndexOf('.')) || imageName; //endung weggenommen
+        await addToDb(imageName, jsonString); //aufruf von servermethode 
+
 
         fileInput.value = ''; // Reset des Input-Feldes (damit man die gleiche Datei erneut auswählen könnte)
 
         // Tabelle mit neuen Daten aktualisieren
-        updateTableFromLocalStorage();
+        await delay(500);
+        await updateTableFromLocalStorage();
     };
 
     reader.readAsDataURL(file);  // Datei als Base64 einlesen
@@ -58,20 +61,18 @@ fileInput.addEventListener('change', () => {
 
 
 // Tabelle mit den gespeicherten Bildern und deren Daten aktualisieren
-function updateTableFromLocalStorage() {
+async function updateTableFromLocalStorage() {
     const table = document.getElementById('HighscoreTabelle');
 
     // Alle alten Datenzeilen (außer der Kopfzeile) löschen
     while (table.rows.length > 1) {
         table.deleteRow(1);
     }
-
+    //anfrage an server senden alle keys in datenbank getten
+    const names = await getNamesFromDB();
     // Durch alle gespeicherten Items im localStorage iterieren
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);                   // Schlüssel (Dateiname)
-        const jsonString = localStorage.getItem(key);      // JSON-String auslesen
-        const data = JSON.parse(jsonString);               // In Objekt umwandeln
-
+    for (let i = 0; i < names.length; i++) {
+        const data = await getData(names[i]);            
         const newRow = table.insertRow();                  // Neue Zeile in die Tabelle einfügen
 
         // Zellen für Name, Highscore und aktuelle Zeit hinzufügen
@@ -79,7 +80,7 @@ function updateTableFromLocalStorage() {
         const highscoreCell = newRow.insertCell();
         const timeCell = newRow.insertCell();
 
-        nameCell.textContent = key;                        // Dateiname anzeigen
+        nameCell.textContent = names[i];                        // Dateiname anzeigen
 
         // Highscore anzeigen (oder "-" wenn nicht vorhanden)
         if (data.highscore != null) {
@@ -131,12 +132,49 @@ function changeSite() {
     // weiterleitung mit parameter parameter gibt an welches bild aus speicher geladen werden muss 
     window.location.href = `main.html?DateiName=${encodeURIComponent(selectedValue)}`;
 }
-async function requestTextWithGET(url) {
-  const response = await fetch(url);
-  console.log('Response:', response); // vollständiges Response-Objekt
-  const text = await response.text();
-  console.log('Response-Text:', text); // Text aus dem Response-Body
+
+async function addToDb(projectName, data) {
+    const url = "http://127.0.0.1:3000/ADDIMAGE?name=" + projectName; // requesturl die an server gesendet wird 
+
+    fetch(url, { //an server senden 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain' //daten die gesendet werden sind text und data (in body)
+        },
+        body: data
+    })
+        .then(response => { //wenn antwort 
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.text();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+}
+async function getNamesFromDB() {
+    const url = "http://127.0.0.1:3000/GETNAMES";
+    const response = await fetch(url);
+    const text = await response.text();
+    console.log(text);
+    return JSON.parse(text);
+
+}
+async function getData(name){
+    const url = "http://127.0.0.1:3000/GETDATA?name=" + name;
+    const response = await fetch(url);
+    const text = await response.text();
+    console.log(text);
+    return JSON.parse(text);
+}
+function delay (ms){
+    return new Promise (resolve => setTimeout(resolve, ms));
 }
 
-requestTextWithGET('http://127.0.0.1:3000/');
-console.log('Zwischenzeitlich weiterarbeiten...');
+
+
+
+
+
+
