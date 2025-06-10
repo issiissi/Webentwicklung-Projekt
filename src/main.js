@@ -1,4 +1,5 @@
 // Globale Variablen
+let dataInDb;
 let seconds = 0;                   // Sekunden-Zähler für die Spielzeit
 let timerInterval = null;         // Referenz auf das setInterval-Timerobjekt
 let originaleAnordnung = null;    // Originale Anordnung der Bildteile
@@ -7,10 +8,9 @@ let feld = 3;                     // Spielfeldgröße (3x3 Puzzle)
 let highscore = null;             // Highscore-Zeit (niedrigste Zeit)
 
 // Startet den Timer beim Laden
-function startTimer() {
-    const data = loadData(); // Lädt gespeicherte Spieldaten
-    if (data.currentTime != null) {
-        seconds = data.currentTime; // Wiederherstellen der vorherigen Zeit
+async function startTimer() {
+    if (dataInDb.currentTime != null) {
+        seconds = dataInDb.currentTime; // Wiederherstellen der vorherigen Zeit
     } else {
         seconds = 0;
     }
@@ -37,7 +37,8 @@ function padZero(num) {
 }
 
 // (Wird ausgeführt, wenn die Seite fertig geladen ist)
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
+    dataInDb = await loadData();
     startTimer(); // Starte den Spielzeit-Timer
     loadName(); // Lädt und zeig Name der Datei an 
     ersetzeMitKleinenCanvases(); // Erzeuge leere Canvas-Felder für das Puzzle
@@ -47,8 +48,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // Lädt das Bild, teilt es auf, mischt es und platziert die Teile
 function loadImage() {
-    const data = loadData();
-    base64ToImageData(data.imageData, (imageData) => {
+    base64ToImageData(dataInDb.imageData, (imageData) => {
         originaleAnordnung = splitImageData(imageData, feld, feld);
         // Leeres Feld (für 8-Puzzle) erzeugen
         originaleAnordnung[originaleAnordnung.length - 1] = emptyTile(
@@ -56,12 +56,12 @@ function loadImage() {
             originaleAnordnung[0].height
         );
 
-        if (data.formation == null) {
+        if (dataInDb.formation == null) {
             // Falls noch keine gespeicherte Anordnung, Puzzle mischen
             shuffleSave(originaleAnordnung.length);
         } else {
             // Gespeicherte Anordnung wiederherstellen
-            shuffeleddata = data.formation;
+            shuffeleddata = dataInDb.formation;
         }
         placeAll(); // Alle Teile anzeigen
     });
@@ -131,29 +131,26 @@ function loadName() {
 }
 
 // Speichert den aktuellen Spielstand und Highscore in localStorage
-function save() {
+ function save() {
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('DateiName');
-    const data = loadData();
-    data.formation = shuffeleddata;
-    data.currentTime = seconds;
+    dataInDb.formation = shuffeleddata;
+    dataInDb.currentTime = seconds;
 
     // Highscore aktualisieren wenn besser oder noch nicht gesetzt
-    if (data.highscore != null && highscore != null && data.highscore > highscore) {
-        data.highscore = highscore;
-    } else if (data.highscore == null && highscore != null) {
-        data.highscore = highscore;
+    if (dataInDb.highscore != null && highscore != null && dataInDb.highscore > highscore) {
+        dataInDb.highscore = highscore;
+    } else if (dataInDb.highscore == null && highscore != null) {
+        dataInDb.highscore = highscore;
     }
-
-    localStorage.setItem(name, JSON.stringify(data));
+saveInDb(name, dataInDb);
 }
 
 // Lädt den Spielstand aus localStorage
-function loadData() {
+async function loadData() {
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('DateiName');
-    const jsonString = localStorage.getItem(name);
-    return JSON.parse(jsonString);
+    return await getDatafromDb(name);
 }
 
 // Spiel zurücksetzen (neu mischen)
@@ -288,15 +285,14 @@ function istInReihenfolge() {
 
 // Zeigt den Highscore in userinterface an
 function loadHighscore() {
-    let data = loadData();
     let textelemet = document.getElementById("HighscoreTime");
 
-    if (data.highscore == null) {
+    if (dataInDb.highscore == null) {
         textelemet.innerText = "- : - : -";
     } else {
-        const hours = Math.floor(data.highscore / 3600);
-        const minutes = Math.floor((data.highscore % 3600) / 60);
-        const secs = data.highscore % 60;
+        const hours = Math.floor(dataInDb.highscore / 3600);
+        const minutes = Math.floor((dataInDb.highscore % 3600) / 60);
+        const secs = dataInDb.highscore % 60;
         textelemet.innerText = `${padZero(hours)}:${padZero(minutes)}:${padZero(secs)}`;
     }
 }
@@ -309,12 +305,35 @@ function winAlert() {
         confirmButtonText: 'OK',
     });
 }
-async function requestTextWithGET(url) {
-  const response = await fetch(url);
-  console.log('Response:', response); // vollständiges Response-Objekt
-  const text = await response.text();
-  console.log('Response-Text:', text); // Text aus dem Response-Body
+async function getDatafromDb(name) {
+    const url = "http://127.0.0.1:3000/GETDATA?name=" + name;
+    const response = await fetch(url);
+    const text = await response.text();
+    console.log(text);
+    const object = JSON.parse(text);
+    return JSON.parse(object.data);
 }
 
-requestTextWithGET('http://127.0.0.1:3000/');
-console.log('Zwischenzeitlich weiterarbeiten...');
+async function saveInDb(name, data) {
+    const url = "http://127.0.0.1:3000/UPDATEE?name=" + name; // requesturl die an server gesendet wird 
+    const jsondata = JSON.stringify(data);
+    fetch(url, { //an server senden 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain' //daten die gesendet werden sind text und data (in body)
+        },
+        body: jsondata
+    })
+        .then(response => { //wenn antwort 
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.text();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+}
+
+
+

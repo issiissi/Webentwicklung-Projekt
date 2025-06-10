@@ -165,8 +165,8 @@ async function getData(name){
     const url = "http://127.0.0.1:3000/GETDATA?name=" + name;
     const response = await fetch(url);
     const text = await response.text();
-    console.log(text);
-    return JSON.parse(text);
+   const object = JSON.parse(text);
+    return JSON.parse(object.data);
 }
 function delay (ms){
     return new Promise (resolve => setTimeout(resolve, ms));

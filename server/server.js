@@ -46,6 +46,29 @@ const server = http.createServer(async (req, res) => {
             addImage(projectName, body);
         });
     }
+    if (req.method === 'POST' && req.url.startsWith('/UPDATE')) { //befehl mit capslock
+        let body = '';
+        console.log("request");
+
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+
+        req.on('end', () => {
+            console.log('Received POST data:', body);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end("Data received:");
+
+            // Get name of the project with the url parameter
+            const urlString = "http://" + localHost + req.url;
+            const urlObj = new URL(urlString);
+            const params = urlObj.searchParams;
+            const projectName = params.get("name");
+
+            updateImage(projectName, body);
+        });
+    }
 
     if (req.method === 'GET' && req.url.startsWith('/GETNAMES')) { //befehl mit capslock
         const returnString = await getAllNames();
