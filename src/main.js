@@ -7,6 +7,29 @@ let shuffeleddata = null;         // Derzeitige zufällige Anordnung der Bildtei
 let feld = 3;                     // Spielfeldgröße (3x3 Puzzle)
 let highscore = null;             // Highscore-Zeit (niedrigste Zeit)
 
+///********************************************************************************************************/
+///methoden bei laden der seite
+///*******************************************************************************************************/
+
+// Wird ausgeführt, wenn die Seite fertig geladen ist
+window.addEventListener("DOMContentLoaded", async () => {
+    dataInDb = await loadData();//daten aus db laden wenn seite geladen
+    startTimer(); // Starte den Spielzeit-Timer
+    loadName(); // Lädt und zeig Name der Datei an 
+    ersetzeMitKleinenCanvases(); // Erzeuge leere Canvas-Felder für das Puzzle
+    loadImage(); // Lädt das gespeicherte Bild und platziere es
+    loadHighscore(); // Zeigt Highscore an
+});
+
+
+// Lädt den Spielstand aus db
+async function loadData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('DateiName');
+    return await getDatafromDb(name);
+}
+
+
 // Startet den Timer beim Laden
 async function startTimer() {
     if (dataInDb.currentTime != null) {
@@ -22,6 +45,15 @@ async function startTimer() {
     }, 1000);
 }
 
+
+// Zeigt den Namen des Bildes an
+function loadName() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let name = urlParams.get('DateiName').replace(/\.[^/.]+$/, '');
+    document.getElementById("nameText").textContent = "Name: " + name;
+}
+
+
 // Aktualisiert die Anzeige der Spielzeit
 function updateTimerDisplay() {
     const hours = Math.floor(seconds / 3600);
@@ -31,20 +63,12 @@ function updateTimerDisplay() {
     document.getElementById("gameTimer").innerText = timeString;
 }
 
+
 // Fügt bei einstelligen Zahlen eine führende Null hinzu (05 statt 5 usw.)
 function padZero(num) {
     return num < 10 ? '0' + num : num;
 }
 
-// (Wird ausgeführt, wenn die Seite fertig geladen ist)
-window.addEventListener("DOMContentLoaded", async () => {
-    dataInDb = await loadData();
-    startTimer(); // Starte den Spielzeit-Timer
-    loadName(); // Lädt und zeig Name der Datei an 
-    ersetzeMitKleinenCanvases(); // Erzeuge leere Canvas-Felder für das Puzzle
-    loadImage(); // Lädt das gespeicherte Bild und platziere es
-    loadHighscore(); // Zeigt Highscore an
-});
 
 // Lädt das Bild, teilt es auf, mischt es und platziert die Teile
 function loadImage() {
@@ -67,13 +91,24 @@ function loadImage() {
     });
 }
 
-// Platziert alle Teile basierend auf shuffeleddata
-function placeAll() {
-    for (let i = 0; i < shuffeleddata.length; i++) {
-        place(i, shuffeleddata[i]);
+
+// Zeigt den Highscore in userinterface an
+function loadHighscore() {
+    let textelemet = document.getElementById("HighscoreTime");
+
+    if (dataInDb.highscore == null) {
+        textelemet.innerText = "- : - : -";
+    } else {
+        const hours = Math.floor(dataInDb.highscore / 3600);
+        const minutes = Math.floor((dataInDb.highscore % 3600) / 60);
+        const secs = dataInDb.highscore % 60;
+        textelemet.innerText = `${padZero(hours)}:${padZero(minutes)}:${padZero(secs)}`;
     }
 }
 
+///********************************************************************************************************/
+///methoden für spielinteraktion
+///*******************************************************************************************************/
 // Bewegt ein Puzzle-Teil beim Klicken, wenn ein benachbartes Feld leer ist (schwarzes Feld)
 function moveTile(event) {
     let id = parseInt(event.srcElement.id.replace("canvas_", ""));
@@ -100,19 +135,32 @@ function moveTile(event) {
     }
 }
 
+
 // Ermittelt das Feld über dem aktuellen Index
 function idAbove(index) {
     return Math.floor(index / feld) > 0 ? index - feld : null;
 }
+
 function idLeft(index) {
     return index % feld > 0 ? index - 1 : null;
 }
+
 function idRight(index) {
     return index % feld < feld - 1 ? index + 1 : null;
 }
+
 function idBelow(index) {
     return Math.floor(index / feld) < feld - 1 ? index + feld : null;
 }
+
+
+// Platziert alle Teile basierend auf shuffeleddata
+function placeAll() {
+    for (let i = 0; i < shuffeleddata.length; i++) {
+        place(i, shuffeleddata[i]);
+    }
+}
+
 
 // Zeichnet ein Teilbild auf das zugehörige Canvas-Feld 
 function place(id_canvas, id_data) {
@@ -123,14 +171,30 @@ function place(id_canvas, id_data) {
     ctx.putImageData(tileImageData, 0, 0);
 }
 
-// Zeigt den Namen des Bildes an
-function loadName() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let name = urlParams.get('DateiName').replace(/\.[^/.]+$/, '');
-    document.getElementById("nameText").textContent = "Name: " + name;
+
+// Prüft, ob das Puzzle korrekt gelöst ist
+function istInReihenfolge() {
+    for (let i = 0; i < shuffeleddata.length - 1; i++) {
+        if (shuffeleddata[i] > shuffeleddata[i + 1]) return false;
+    }
+    return true;
 }
 
-// Speichert den aktuellen Spielstand und Highscore in localStorage
+
+// Zeigt ein Gewinn-Popup an
+function winAlert() {
+    Swal.fire({
+        title: 'You Won!',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+    });
+}
+
+///********************************************************************************************************/
+///methoden nmit buttoninteraktion
+///*******************************************************************************************************/
+
+// Speichert den aktuellen Spielstand und Highscore in db
  function save() {
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('DateiName');
@@ -146,12 +210,6 @@ function loadName() {
 saveInDb(name, dataInDb);
 }
 
-// Lädt den Spielstand aus localStorage
-async function loadData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('DateiName');
-    return await getDatafromDb(name);
-}
 
 // Spiel zurücksetzen (neu mischen)
 function reset() {
@@ -170,6 +228,7 @@ function reset() {
     });
 }
 
+
 // zurück auf Startseite um anders Bild zu spielen 
 function changeImage() {
     Swal.fire({
@@ -184,6 +243,10 @@ function changeImage() {
         window.location.href = "start.html";
     });
 }
+
+///********************************************************************************************************/
+///methoden zum spielfeldaufbau
+///*******************************************************************************************************/
 
 // Erstellt Canvas-Felder 
 function ersetzeMitKleinenCanvases() {
@@ -205,6 +268,7 @@ function ersetzeMitKleinenCanvases() {
         puzzlefeld.appendChild(kleinesCanvas);
     }
 }
+
 
 // Teilt Bild in kleinere Teile auf
 function splitImageData(imageData, rows, cols) {
@@ -231,6 +295,7 @@ function splitImageData(imageData, rows, cols) {
     return tiles;
 }
 
+
 // Wandelt ein base64-Bild in ImageData um um auf einzelne canvas speicher zu können 
 function base64ToImageData(base64, callback) {
     const img = new Image();
@@ -248,11 +313,13 @@ function base64ToImageData(base64, callback) {
     };
 }
 
+
 // Erzeugt ein leeres (transparentes) Teilstück
 function emptyTile(tileWidth, tileHeight) {
     const tileData = new Uint8ClampedArray(tileWidth * tileHeight * 4);
     return { width: tileWidth, height: tileHeight, data: tileData };
 }
+
 
 // Mischt das Puzzle durch simulierte, gültige Bewegungen shuffelt so dass es immer möglich ist spiel zu lösen
 function shuffleSave(arrayLength) {
@@ -275,36 +342,11 @@ function shuffleSave(arrayLength) {
     shuffleStep(0); // Shuffle starten
 }
 
-// Prüft, ob das Puzzle korrekt gelöst ist
-function istInReihenfolge() {
-    for (let i = 0; i < shuffeleddata.length - 1; i++) {
-        if (shuffeleddata[i] > shuffeleddata[i + 1]) return false;
-    }
-    return true;
-}
+///********************************************************************************************************/
+///methoden interaktion mit server
+///*******************************************************************************************************/
 
-// Zeigt den Highscore in userinterface an
-function loadHighscore() {
-    let textelemet = document.getElementById("HighscoreTime");
-
-    if (dataInDb.highscore == null) {
-        textelemet.innerText = "- : - : -";
-    } else {
-        const hours = Math.floor(dataInDb.highscore / 3600);
-        const minutes = Math.floor((dataInDb.highscore % 3600) / 60);
-        const secs = dataInDb.highscore % 60;
-        textelemet.innerText = `${padZero(hours)}:${padZero(minutes)}:${padZero(secs)}`;
-    }
-}
-
-// Zeigt ein Gewinn-Popup an
-function winAlert() {
-    Swal.fire({
-        title: 'You Won!',
-        showCancelButton: false,
-        confirmButtonText: 'OK',
-    });
-}
+//data aus db laden
 async function getDatafromDb(name) {
     const url = "http://127.0.0.1:3000/GETDATA?name=" + name;
     const response = await fetch(url);
@@ -314,6 +356,8 @@ async function getDatafromDb(name) {
     return JSON.parse(object.data);
 }
 
+
+//updatet daten aus db
 async function saveInDb(name, data) {
     const url = "http://127.0.0.1:3000/UPDATEE?name=" + name; // requesturl die an server gesendet wird 
     const jsondata = JSON.stringify(data);
@@ -330,7 +374,7 @@ async function saveInDb(name, data) {
             }
             return response.text();
         })
-        .catch(error => {
+        .catch(error => { //fehler in anfrage
             console.error('There has been a problem with your fetch operation:', error);
         });
 }

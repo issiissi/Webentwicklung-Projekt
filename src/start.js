@@ -5,18 +5,60 @@ fileInput.accept = 'image/*';             // Nur Bilddateien zulassen
 fileInput.style.display = 'none';         // Unsichtbar machen
 document.body.appendChild(fileInput);     // In den Body einfügen
 
+//  Tabelle definieren und ausgewählten Wert speichern
+const table = document.getElementById('HighscoreTabelle');
+let selectedValue = null;
+
 //  Den Import-Button im HTML-Dokument holen
 const importButton = document.querySelector('.importbutton .runderbutton');
 
+///********************************************************************************************************/
+///methoden zur userinteraktion
+///*******************************************************************************************************/
+
 //  Funktion wird ausgeführt, sobald das DOM vollständig geladen ist
 document.addEventListener('DOMContentLoaded', async () => {
-   await updateTableFromLocalStorage();        // Tabelle mit gespeicherten Bilddaten aktualisieren
+    await updateTablefromDB();  //füllt tabelle mit daten aus datenbank
 });
+
 
 //  Beim Klick auf den Button wird das Datei-Auswahlfenster geöffnet
 importButton.addEventListener('click', () => {
     fileInput.click();                    // Klick auf das versteckte Input-Feld auslösen
 });
+
+//  markiert die geklickte Zeile und speichert den Namen
+function selectRow(event) {
+    // Alle bisherigen Markierungen entfernen
+    for (let j = 1; j < table.rows.length; j++) {
+        table.rows[j].classList.remove('selected');
+    }
+
+    // Aktuelle Zeile markieren
+    const clickedRow = event.currentTarget;
+    clickedRow.classList.add('selected');
+
+    // Namen der Bilddatei merken
+    selectedValue = clickedRow.cells[0].innerText;
+    console.log('Gespeichert:', selectedValue); // Für Debugzwecke
+}
+
+
+// wechsel auf andere Seite
+function changeSite() {
+    // Wenn keine Auswahl getroffen wurde, Hinweis anzeigen
+    if (selectedValue == null) {
+        window.alert("No picture selected ");
+        return;
+    }
+
+    // weiterleitung mit parameter parameter gibt an welches bild aus speicher geladen werden muss 
+    window.location.href = `main.html?DateiName=${encodeURIComponent(selectedValue)}`;
+}
+
+///********************************************************************************************************/
+///methoden zum hochladen von bildern
+///*******************************************************************************************************/
 
 // Wenn der Benutzer ein Bild auswählt, wird dieses eingelesen und im LocalStorage gespeichert
 fileInput.addEventListener('change', () => {
@@ -46,22 +88,25 @@ fileInput.addEventListener('change', () => {
         // Daten in JSON umwandeln und im LocalStorage speichern
         const jsonString = JSON.stringify(jsondata);
         imageName = imageName.substring(0, imageName.lastIndexOf('.')) || imageName; //endung weggenommen
-        await addToDb(imageName, jsonString); //aufruf von servermethode 
+        await addToDb(imageName, jsonString); //wenn bild hinzugefügt wird jsonobjekt erstellt das über server an datenbank sendet
 
 
         fileInput.value = ''; // Reset des Input-Feldes (damit man die gleiche Datei erneut auswählen könnte)
 
         // Tabelle mit neuen Daten aktualisieren
-        await delay(500);
-        await updateTableFromLocalStorage();
+        await delay(500);//delay von 500 ms
+        await updateTablefromDB();
     };
 
     reader.readAsDataURL(file);  // Datei als Base64 einlesen
 });
 
+///********************************************************************************************************/
+///methoden zum tabelle laden
+///*******************************************************************************************************/
 
 // Tabelle mit den gespeicherten Bildern und deren Daten aktualisieren
-async function updateTableFromLocalStorage() {
+async function updateTablefromDB() {
     const table = document.getElementById('HighscoreTabelle');
 
     // Alle alten Datenzeilen (außer der Kopfzeile) löschen
@@ -70,9 +115,9 @@ async function updateTableFromLocalStorage() {
     }
     //anfrage an server senden alle keys in datenbank getten
     const names = await getNamesFromDB();
-    // Durch alle gespeicherten Items im localStorage iterieren
+    // Durch alle gespeicherten Items in name array iterieren
     for (let i = 0; i < names.length; i++) {
-        const data = await getData(names[i]);            
+        const data = await getData(names[i]);//lädt daten aus datenbank            
         const newRow = table.insertRow();                  // Neue Zeile in die Tabelle einfügen
 
         // Zellen für Name, Highscore und aktuelle Zeit hinzufügen
@@ -101,49 +146,23 @@ async function updateTableFromLocalStorage() {
     }
 }
 
-//  Tabelle definieren und ausgewählten Wert speichern
-const table = document.getElementById('HighscoreTabelle');
-let selectedValue = null;
+///********************************************************************************************************/
+///methoden zur interaktion mit server
+///*******************************************************************************************************/
 
-//  markiert die geklickte Zeile und speichert den Namen
-function selectRow(event) {
-    // Alle bisherigen Markierungen entfernen
-    for (let j = 1; j < table.rows.length; j++) {
-        table.rows[j].classList.remove('selected');
-    }
-
-    // Aktuelle Zeile markieren
-    const clickedRow = event.currentTarget;
-    clickedRow.classList.add('selected');
-
-    // Namen der Bilddatei merken
-    selectedValue = clickedRow.cells[0].innerText;
-    console.log('Gespeichert:', selectedValue); // Für Debugzwecke
-}
-
-// wechsel auf andere Seite
-function changeSite() {
-    // Wenn keine Auswahl getroffen wurde, Hinweis anzeigen
-    if (selectedValue == null) {
-        window.alert("No picture selected ");
-        return;
-    }
-
-    // weiterleitung mit parameter parameter gibt an welches bild aus speicher geladen werden muss 
-    window.location.href = `main.html?DateiName=${encodeURIComponent(selectedValue)}`;
-}
-
+//bild datenbank hinzufügen
 async function addToDb(projectName, data) {
     const url = "http://127.0.0.1:3000/ADDIMAGE?name=" + projectName; // requesturl die an server gesendet wird 
 
-    fetch(url, { //an server senden 
+    fetch(url, { //url, content,daten an server senden 
         method: 'POST',
         headers: {
             'Content-Type': 'text/plain' //daten die gesendet werden sind text und data (in body)
         },
-        body: data
+        body: data //json string der gesendet wird
     })
-        .then(response => { //wenn antwort 
+        //abfrage ob alles richtig passiert
+        .then(response => { //wenn antwort 200 ist sind daten angekommen
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
             }
@@ -153,23 +172,31 @@ async function addToDb(projectName, data) {
             console.error('There has been a problem with your fetch operation:', error);
         });
 }
+
+
+//fragt keys in datenbank ab 
 async function getNamesFromDB() {
     const url = "http://127.0.0.1:3000/GETNAMES";
-    const response = await fetch(url);
-    const text = await response.text();
+    const response = await fetch(url);//json text wird angefragt
+    const text = await response.text();//daten kommen an
     console.log(text);
-    return JSON.parse(text);
-
+    return JSON.parse(text);//wird als array zurückgegeben
 }
-async function getData(name){
-    const url = "http://127.0.0.1:3000/GETDATA?name=" + name;
+
+
+//fragt von einzelnem bild daten ab 
+async function getData(name) {
+    const url = "http://127.0.0.1:3000/GETDATA?name=" + name;//über url parameter
     const response = await fetch(url);
     const text = await response.text();
-   const object = JSON.parse(text);
+    const object = JSON.parse(text);
     return JSON.parse(object.data);
 }
-function delay (ms){
-    return new Promise (resolve => setTimeout(resolve, ms));
+
+
+//delay
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
