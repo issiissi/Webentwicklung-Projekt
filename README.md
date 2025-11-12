@@ -2,12 +2,11 @@
 
 ## 📖 Projektbeschreibung
 Dieses Repository ist die Abgabe für das Modul **Webentwicklung im 2. Semester**.  
-Das Projekt beinhaltet ein interaktives **Schiebepuzzle-Spiel**, das sowohl mit eigenen als auch mit vorgefertigten Bildern gespielt werden kann.
+Das Projekt beinhaltet ein interaktives **Schiebepuzzle-Spiel**, das mit eigenen Bildern gespielt werden kann.
 
 ### 🎮 Funktionsumfang
 - Klassisches **Schiebepuzzle-Spiel**
 - **Eigene Bilder** können hochgeladen und gespielt werden
-- Auswahl zwischen **eigenen** und **vorgefertigten Bildern**
 - **Zeitmessung** und Speicherung der Bestzeiten (**Highscores**) in einer lokalen Datenbank
 - Möglichkeit, das Puzzle auf die **Ausgangsposition** zurückzusetzen
 
@@ -18,8 +17,8 @@ Das Projekt beinhaltet ein interaktives **Schiebepuzzle-Spiel**, das sowohl mit 
 - **Spielseite:**  
   Hier kann das Puzzle gespielt werden. Außerdem werden die gespeicherten Highscores angezeigt.
 
-- **Verwaltungsseite:**  
-  Auf dieser Seite können eigene Bilder **hochgeladen** oder **gelöscht** werden.
+- **Startseite:**  
+  Auf dieser Seite können eigene Bilder **hochgeladen** oder **gelöscht** werden. Zudem werden Bilder, welche bereits in der Datenbak gespeichert sind ausgewählt, weitergespielt oder erneut gespielt werden.
 
 ---
 
