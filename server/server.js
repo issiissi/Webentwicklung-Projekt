@@ -5,15 +5,15 @@ const sqlite = require('sqlite'); //""
 const fs = require('fs'); //fileSystem
 
 //constanten
-const pathDb = 'C:\\Users\\issig\\Desktop\\Uni\\Webentwicklung-Projekt\\server\\data.db';//Path zu sq datenbank
+const pathDb = 'C:\\Users\\issig\\Desktop\\Uni\\Webentwicklung-Projekt\\server\\data.db';//Path to sql database
 const localHost = '127.0.0.1'; //LocalhostID Server läuft nur lokal
 const port = 3000; // welche daten für welche anwendung. port auf server bekommt infos. kommunikationsschnittstelle
 
 ///********************************************************************************************************/
-///methoden für server
+///methods for server
 ///*******************************************************************************************************/
 
-//server erstellen und starten
+//create and start server
 console.log("server erstellt");
 const server = http.createServer(async (req, res) => {
     // Set CORS headers. domains erlauben
@@ -21,7 +21,7 @@ const server = http.createServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Allows specific methods
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allows specific headers
 
-    // Handle preflight requests. (Cross-Origin-Anfrage) options anfrage
+    // Handle preflight requests. (Cross-Origin-Anfrage) options request
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
         res.end();
@@ -113,7 +113,7 @@ server.listen(port, localHost, () => {
 
 
 ///********************************************************************************************************/
-///methoden zur interaktion mit datenbank
+///methods for interaction with db
 ///*******************************************************************************************************/
 
 //funktion um in datenbank hinzuzufügen (Bilddaten)
