@@ -39,3 +39,14 @@ Die erzielten Highscores werden lokal gespeichert und beim erneuten Öffnen der 
 Das Projekt speichert alle Daten lokal – es ist kein externer Server erforderlich.
 
 Für optimale Funktion sollte ein moderner Browser (z. B. Chrome, Firefox, Edge) verwendet werden.
+
+# Bilder der Webseite
+### Spiel Seite
+<div align="center">
+    <img src="images/Main.png" alt="Logo" width="auto" height="auto">
+</div>
+
+### Start Seite
+<div align="center">
+    <img src="images/Start.png" alt="Logo" width="auto" height="auto">
+</div>
